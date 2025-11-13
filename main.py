@@ -24,8 +24,8 @@ from config import *
     # --- Aviation scrapped data---
     # We'll scrape a table of the largest companies
     # process data firsts
-#get_accident_table_data(AVIATION_ACCIDENTS)
-#get_trend_data(SEARCH_QUERIES)
+get_accident_table_data(AVIATION_ACCIDENTS)
+get_trend_data(SEARCH_QUERIES)
 get_enplanement(ENPLANEMENTS_CSV)
     # plot results
     # plot_statistics(plot_df.dropna(), 'Wikipedia_Companies', result_dir=RESULTS_DIR)

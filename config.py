@@ -10,7 +10,7 @@ DATA_DIR = "../data"
 RESULTS_DIR = "../results"
 
 # data sources configuration
-IRIS_URL = 'https://gist.githubusercontent.com/curran/a08a1080b88344b0c8a7/raw/0e7a9b0a5d22642a06d3d5b9bcbad9890c8ee534/iris.csv'
+ENPLANEMENTS_CSV = 'https://drive.google.com/uc?export=download&id=1zRSeyQb8DBPbkLVa10rDqBrScU4P0SBM'
 SEARCH_QUERIES = 'airplane accident,airplane crash'
 AVIATION_ACCIDENTS = 'https://aviation-safety.net/database/year'
 

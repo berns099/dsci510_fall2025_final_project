@@ -6,6 +6,8 @@ from serpapi import GoogleSearch
 import time
 from dotenv import load_dotenv
 import os
+import gdown
+
 
 # --- 1. DOWNLOAD ACCIDENT DATA FROM AVIATION SAFETY NETWORK
 # --- OUTPUTS CSV FILE
@@ -102,3 +104,16 @@ def get_trend_data(queries_input):
 
 
 #3 TRANSTATS - Track passenger enplanements
+
+def get_enplanement(url):
+   print(f"--- Loading data from Web URL: {url[:50]}... ---")
+
+   try:
+       gdown.download(url,"enplanements.csv", quiet=False)
+       df = pd.read_csv("enplanements.csv")
+       print("Web CSV data loaded successfully.")
+       print(df.head())
+       return df
+   except Exception as e:
+       print(f"Error loading data from URL: {e}")
+       return None

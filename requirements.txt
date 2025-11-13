@@ -1,0 +1,9 @@
+BeautifulSoup
+requests
+re
+pandas
+serpapi
+time
+dotenv
+os
+gdown

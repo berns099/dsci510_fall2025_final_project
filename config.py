@@ -10,7 +10,7 @@ DATA_DIR = "../data"
 RESULTS_DIR = "../results"
 
 # data sources configuration
-ENPLANEMENTS_CSV = 'https://drive.google.com/uc?export=download&id=1zRSeyQb8DBPbkLVa10rDqBrScU4P0SBM'
+ENPLANEMENTS_CSV = 'https://docs.google.com/spreadsheets/d/1Zxxlbj3-jXBdDsURy_9wI5mkQD-o8g3IH3eDGBs6dgQ/export?format=csv'
 SEARCH_QUERIES = 'airplane accident,airplane crash'
 AVIATION_ACCIDENTS = 'https://aviation-safety.net/database/year'
 

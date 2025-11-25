@@ -10,7 +10,7 @@ import gdown
 
 
 # --- 1. DOWNLOAD ACCIDENT DATA FROM AVIATION SAFETY NETWORK
-# --- OUTPUTS CSV FILE
+# --- OUTPUTS DF
 def get_accident_table_data(url_input):
     accident_dict = []
     headers = {
@@ -38,7 +38,6 @@ def get_accident_table_data(url_input):
                 cells = row.find_all('td')
                 if len(cells) < 5:
                     continue
-
                 flag_img = cells[6].find('img')
                 marker = "International"
                 if flag_img:
@@ -55,15 +54,7 @@ def get_accident_table_data(url_input):
         year += 1
     df = pd.DataFrame(accident_dict)
     print(df.head())
-
-    #
-    # output_file = "accidents.csv"
-    # with open(output_file, mode="w", newline="", encoding="utf-8") as csv_file:
-    #     fieldnames = ["accident_date", "operator", "fatalities", "marker"]
-    #     writer = csv.DictWriter(csv_file, fieldnames=fieldnames)
-    #     writer.writeheader()
-    #     writer.writerows(accident_dict)
-    # print(f"{len(accident_dict)} records saved to {output_file}")
+    return df
 
 # --- 2. USE SERPAPI to determine
 
@@ -100,20 +91,33 @@ def get_trend_data(queries_input):
             time.sleep(2)
         i+=1
     df = pd.DataFrame(all_results)
-    print(df.head())
+    return df
 
 
 #3 TRANSTATS - Track passenger enplanements
 
 def get_enplanement(url):
-   print(f"--- Loading data from Web URL: {url[:50]}... ---")
-
-   try:
-       gdown.download(url,"enplanements.csv", quiet=False)
-       df = pd.read_csv("enplanements.csv")
-       print("Web CSV data loaded successfully.")
-       print(df.head())
-       return df
-   except Exception as e:
-       print(f"Error loading data from URL: {e}")
-       return None
+    try:
+        gdown.download(url, "enplanements.csv", quiet=False)
+        #first row is not applicable, skip through it
+        df = pd.read_csv("enplanements.csv", header=None)
+        df.columns = df.iloc[1]
+        df = df.drop([0,1]).reset_index(drop=True)
+        # Rename columns, period_raw will be converted into a different period / date
+        df = df.rename(columns={"Period": "period_raw", "Domestic Total": "Domestic", "International Total": "International", "Total": "Total"})
+        # Filter through the rows that do not contain text and dates
+        valid_rows = df["period_raw"].astype(str).str.match(r"^[A-Za-z]+ \d{4}$")
+        df = df[valid_rows].reset_index(drop=True)
+        #convert the new column to dates
+        df["period"] = pd.to_datetime(df["period_raw"], format="%B %Y")
+        #goes through columns and forces them to become a string, then removes commas and white space,
+        #converts the string into the numbers, and if it's not able to, becomes a NaN value that will be dropped
+        for col in ["Domestic", "International", "Total"]:
+            df[col] = (df[col].astype(str).str.replace(",", "").str.strip()            )
+            df[col] = pd.to_numeric(df[col], errors="coerce")
+        df = df.dropna(subset=["period", "Domestic", "International", "Total"])
+        print("Final cleaned DF:")
+        return df
+    except Exception as e:
+        print(f"Error loading data from URL: {e}")
+        return None

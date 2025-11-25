@@ -4,3 +4,7 @@ google_trends_airplane.json
 aviationaccidents.py
 googletrendscrapping.py
 enplanements.csv
+accident_data1.csv
+trend_results.csv
+.DS_Store
+._*

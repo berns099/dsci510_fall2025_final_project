@@ -18,6 +18,8 @@ def accident_plot(url):
     monthly_count = (df.groupby(df["dates_cleaned"].dt.to_period("M")).size().reset_index(name="count"))
     #turns the dates into months and days on the 1st so that it can be plotted
     monthly_count["dates_cleaned"] = monthly_count["dates_cleaned"].dt.to_timestamp()
+    monthly_count["MA12"] = monthly_count["count"].rolling(window=12).mean()
+    sns.lineplot(data=monthly_count, x="dates_cleaned", y="MA12", label="12-Month MA", linewidth=3)
     plt.figure(figsize = (18, 8))
     sns.lineplot(data=monthly_count, x="dates_cleaned", y="count")
     plt.gca().xaxis.set_major_locator(mdates.YearLocator())
@@ -84,6 +86,7 @@ def accident_plot(url):
     print(f"Year with most fatalities: {max_year_fatal} ({max_year_fatal_count})")
     print(f"Time of year with most fatalities: {max_month_name_fatal} ({max_month_name_fatal_count})")
     print(f"Month with most fatalities: {max_specific_fatal_month} ({max_specific_fatal_count})")
+
 
 
 

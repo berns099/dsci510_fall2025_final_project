@@ -113,10 +113,11 @@ def get_enplanement(url):
         #goes through columns and forces them to become a string, then removes commas and white space,
         #converts the string into the numbers, and if it's not able to, becomes a NaN value that will be dropped
         for col in ["Domestic", "International", "Total"]:
-            df[col] = (df[col].astype(str).str.replace(",", "").str.strip()            )
+            df[col] = (df[col].astype(str).str.replace(",", "").str.strip())
             df[col] = pd.to_numeric(df[col], errors="coerce")
+        for col in ["Domestic", "International", "Total"]:
+            df[col] = df[col] * 1000
         df = df.dropna(subset=["period", "Domestic", "International", "Total"])
-        print("Final cleaned DF:")
         return df
     except Exception as e:
         print(f"Error loading data from URL: {e}")

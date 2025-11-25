@@ -42,11 +42,57 @@ def accident_plot(url):
     plt.tight_layout()
     plt.plot()
 
+    #calculate stats for accidents
+    monthly_count["year"] = monthly_count["dates_cleaned"].dt.year
+    monthly_count["month_name"] = monthly_count["dates_cleaned"].dt.month_name()
+
+    #what year had most accidents
+    year_totals = monthly_count.groupby("year")["count"].sum()
+    max_year = year_totals.idxmax()
+    max_year_count = year_totals.max()
+
+    #what month of the year has the most accidents
+    month_totals = monthly_count.groupby("month_name")["count"].sum()
+    max_month_name = month_totals.idxmax()
+    max_month_name_count = month_totals.max()
+
+    #what month has the most accidents
+    max_row = monthly_count.loc[monthly_count["count"].idxmax()]
+    max_specific_month = max_row["dates_cleaned"].strftime("%B %Y")
+    max_specific_count = max_row["count"]
+
+    print(f"Year with most accidents: {max_year} ({max_year_count})")
+    print(f"Time of year with most accidents: {max_month_name} ({max_month_name_count})")
+    print(f"Month with most accidents: {max_specific_month} ({max_specific_count})")
+
+    #calculate stats for fatalities
+    monthly_fatalities["year"] = monthly_fatalities["month"].dt.year
+    monthly_fatalities["month_name"] = monthly_fatalities["month"].dt.month_name()
+
+    year_fatal_totals = monthly_fatalities.groupby("year")["fatalities_cleaned"].sum()
+    max_year_fatal = year_fatal_totals.idxmax()
+    max_year_fatal_count = year_fatal_totals.max()
+
+    month_fatal_totals = monthly_fatalities.groupby("month_name")["fatalities_cleaned"].sum()
+    max_month_name_fatal = month_fatal_totals.idxmax()
+    max_month_name_fatal_count = month_fatal_totals.max()
+
+    max_fatal_row = monthly_fatalities.loc[monthly_fatalities["fatalities_cleaned"].idxmax()]
+    max_specific_fatal_month = max_fatal_row["month"].strftime("%B %Y")
+    max_specific_fatal_count = max_fatal_row["fatalities_cleaned"]
+
+    print(f"Year with most fatalities: {max_year_fatal} ({max_year_fatal_count})")
+    print(f"Time of year with most fatalities: {max_month_name_fatal} ({max_month_name_fatal_count})")
+    print(f"Month with most fatalities: {max_specific_fatal_month} ({max_specific_fatal_count})")
+
+
 
 #2 timeseries data with corresponding to google search trends on a scale of 0-100
 def google_trend_plot(queries_input):
     df = process_google_trend(queries_input)
     df['date'] = pd.to_datetime(df['date'])
+    corr = df['US_average'].corr(df['worldwide_average'])
+    print("Correlation between US and International Google Trend scores:", corr)
     sns.set_theme(style="whitegrid")
     plt.figure(figsize = (16, 10))
     sns.lineplot(data=df, x="date", y="US_average", label = "US Trend Score")
@@ -80,6 +126,8 @@ def enplanements_plot(url):
     plt.legend()
     plt.tight_layout()
     plt.show()
+    correlation = df["Domestic"].corr(df["International"])
+    print("Correlation: ", correlation)
 
 #comparing relevancy of google search trends to the occurrence of accidents
 def accident_vs_trends_correlation(accident_url, queries_input):
@@ -200,7 +248,7 @@ def us_trend_vs_enplanements_lag_heatmap(enplanement_url, queries_input, lag_mon
     sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", linewidths=0.5, vmin=-1, vmax=1, square=True)
     lag_label = "No Lag"
     if lag_months != 0:
-        f"Lag = {lag_months} Months"
+        lag_label = f"{lag_months} Months"
     plt.title(f"US Trend vs Enplanements ({lag_label})", fontsize=12)
     plt.tight_layout()
     plt.show()
@@ -230,7 +278,7 @@ def international_trend_vs_enplanements_lag_heatmap(enplanement_url, queries_inp
     sns.heatmap(corr_matrix, annot=True, cmap="coolwarm", vmin=-1, vmax=1, linewidths=1, square=True)
     lag_label = "No Lag"
     if lag_months != 0:
-        f"Lag = {lag_months} Months"
+        lag_label = f"{lag_months} Months"
     plt.title(f"International Trend vs Enplanements ({lag_label})")
     plt.tight_layout()
     plt.show()
